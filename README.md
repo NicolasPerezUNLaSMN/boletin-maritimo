@@ -1,71 +1,325 @@
-# meMAREAVI — identidad visual actualizada
+# meMAREAVI
 
-## Ejecución
+**Marítima Elaboraciones: Módulo Argentino de Reportes, Emisiones y Avisos**  
+**Servicio Meteorológico Nacional (SMN) · Centro Operativo de Pronóstico (COP) · METAREA VI**
 
-Activar el entorno virtual e iniciar `streamlit run app.py`.
+Aplicación web local desarrollada en **Python + Streamlit** para integrar el pronóstico meteorológico exportado desde **PIMET**, la información de **olas** y de **hielos y témpanos** remitida por el **Servicio de Hidrografía Naval (SHN)**, y elaborar productos para navegantes: boletín METAREA VI en inglés y español, y siete productos NAVTEX (seis estaciones costeras y uno consolidado).
 
-## NAVTEX
+> **Estado del proyecto:** herramienta en desarrollo y validación operativa. El botón **Guardar emisión completa** archiva una copia local, pero **no envía** mensajes por correo, FTP ni SFTP. El futuro botón **ENVIAR** todavía no está implementado. Los productos deben revisarse antes de cualquier utilización oficial.
 
-La pestaña NAVTEX muestra los seis boletines costeros y el general, uno debajo de otro, con descargas individuales y ZIP conjunto. Se mantiene la asociación estación/área de `navtex.py` (requiere validación operacional).
+---
 
-## Archivo histórico
+## 1. Requisitos previos
 
-En **Archivo y datos** se guarda explícitamente una **instantánea completa** de la emisión: METAREA inglés/español, siete NAVTEX, `areas.json`, `metadatos.json` (avisos y situaciones), y copias de los archivos fuente que estén cargados. Se crea una carpeta inmutable por guardado en `data/emisiones/<id>/`.
+- **Windows 10/11** (las instrucciones principales se dan para PowerShell); también puede ejecutarse en Linux/macOS con comandos equivalentes.
+- **Python 3.11**, recomendado para reproducir el entorno de desarrollo actual.
+- **Git**, para clonar el repositorio. Si recibiste el proyecto como ZIP, Git no es indispensable.
+- Acceso a la red para instalar dependencias la primera vez.
+- Archivos operativos de entrada: **XML de PIMET** (necesario); **TXT de olas** y **TXT de hielos/témpanos** del SHN (según disponibilidad).
 
-El botón **Guardar emisión completa** no transmite ni publica boletines: archiva borradores. Cada clic crea una nueva versión. Las descargas individuales no archivan automáticamente. Los archivos se guardan en el equipo/servidor donde se ejecuta Streamlit, **no en el navegador**. Realizar copias de seguridad periódicas de `data/`, incluyendo `data/avisos.json`.
+### 1.1. Instalar Python en Windows si todavía no está instalado
 
-## Volumen de almacenamiento y dimensionamiento para despliegue
+1. Entrar en <https://www.python.org/downloads/> y descargar una versión de **Python 3.11.x** compatible con Windows.
+2. Ejecutar el instalador y, si ofrece la opción, marcar **Add python.exe to PATH**. Completar la instalación.
+3. Cerrar y volver a abrir PowerShell o la terminal de VS Code.
+4. Comprobar la instalación:
 
-### Supuestos de cálculo (estimación inicial, octubre de 2026)
+   ```powershell
+   py -3.11 --version
+   py -3.11 -m pip --version
+   ```
 
-- Tamaño observado de una carpeta completa de emisión en `data/emisiones/<id>/`: **390–400 KB** aproximadamente, incluyendo TXT, JSON y copias de las fuentes cargadas.
-- Frecuencia operativa prevista: **dos emisiones diarias** (00 y 12 UTC).
-- Se supone **un guardado por emisión** y 365 días de operación al año. Si se guardan borradores, correcciones o reemisiones, cada guardado crea otra carpeta y aumenta el consumo.
-- Cálculos aproximados en unidades decimales (1 MB = 1.000 KB; 1 GB = 1.000 MB). No incluyen el espacio ocupado por el sistema, dependencias, registros, respaldos ni otros archivos ajenos a cada emisión.
+Si `py` no está disponible, probar `python --version` y `python -m pip --version`. Si Windows abre Microsoft Store en lugar de Python, revisar los *alias de ejecución de aplicaciones* de Windows y la instalación/PATH de Python.
 
-| Período | Emisiones | Almacenamiento estimado |
+### 1.2. Instalar Git si no está instalado
+
+Descargarlo de <https://git-scm.com/downloads/win>, instalarlo y abrir una terminal nueva. Verificar:
+
+```powershell
+git --version
+```
+
+## 2. Obtener el código
+
+### Opción A: clonar el repositorio Git
+
+En PowerShell, elegir una carpeta de trabajo y ejecutar:
+
+```powershell
+cd "$HOME\Documents"
+git clone <URL-DEL-REPOSITORIO>
+cd <CARPETA-CREADA-POR-GIT>
+```
+
+**Importante:** reemplazar los dos valores entre `<>` por la URL real del repositorio institucional y el nombre de la carpeta creada. **No hay una URL de repositorio definida en esta documentación**, por lo que no se inventa una.
+
+Si el repositorio es privado, Git puede solicitar credenciales o autenticación institucional. Consultar al administrador del repositorio.
+
+### Opción B: ejecutar desde un ZIP
+
+1. Descargar el ZIP del proyecto.
+2. Extraerlo en una carpeta estable, por ejemplo `C:\proyectos\meMAREAVI`.
+3. Abrir esa carpeta en PowerShell o en **Visual Studio Code** (*Archivo > Abrir carpeta*).
+4. Verificar que en la carpeta actual existan **`app.py`** y **`requirements.txt`**.
+
+> En los ejemplos siguientes, todos los comandos se ejecutan **desde la carpeta raíz del proyecto**, donde está `app.py`.
+
+## 3. Crear y activar un entorno virtual (Windows / PowerShell)
+
+El entorno virtual evita mezclar las bibliotecas de meMAREAVI con las de otros proyectos Python.
+
+### 3.1. Crear el entorno (solo la primera vez)
+
+```powershell
+py -3.11 -m venv .venv
+```
+
+Si el lanzador `py` no existe pero Python funciona, usar `python -m venv .venv`.
+
+### 3.2. Activarlo (cada vez que se abre una terminal nueva)
+
+```powershell
+.\.venv\Scripts\Activate.ps1
+```
+
+La terminal normalmente mostrará `(.venv)` al comienzo de la línea. Confirmar que el intérprete sea el esperado:
+
+```powershell
+python --version
+python -m pip --version
+```
+
+### 3.3. Si PowerShell no permite activar scripts
+
+Puede aparecer el error **“running scripts is disabled on this system”**. Para permitir la activación **solo en la sesión actual**:
+
+```powershell
+Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass
+.\.venv\Scripts\Activate.ps1
+```
+
+El cambio de `Process` desaparece al cerrar esa ventana. No hace falta usar permisos de administrador para este alcance. **En equipos institucionales, respetar las políticas de seguridad de TI**: si están restringidas, no intentar sortearlas y consultar a Infraestructura.
+
+Alternativa que **no requiere activar** el entorno virtual:
+
+```powershell
+.\.venv\Scripts\python.exe -m pip install -r requirements.txt
+.\.venv\Scripts\python.exe -m streamlit run app.py
+```
+
+Otra alternativa es abrir **Símbolo del sistema (CMD)** y ejecutar `\.venv\Scripts\activate.bat` (sin la barra inicial, es decir, `.venv\Scripts\activate.bat`).
+
+## 4. Instalar las dependencias
+
+Con el entorno activado, ejecutar:
+
+```powershell
+python -m pip install --upgrade pip
+python -m pip install -r requirements.txt
+```
+
+La instalación inicial puede demorar algunos minutos. `requirements.txt` es el listado de bibliotecas de esta versión; no hace falta instalarlas una por una.
+
+Si falla la instalación por proxy o certificados de la red institucional, consultar al área de infraestructura antes de modificar la configuración de seguridad.
+
+## 5. Iniciar la aplicación
+
+Con el entorno activado y ubicados en la carpeta raíz:
+
+```powershell
+python -m streamlit run app.py
+```
+
+Streamlit mostrará una dirección local, normalmente **http://localhost:8501**, y puede abrir automáticamente el navegador. Si no lo hace, copiar la dirección indicada en la terminal.
+
+- **Detener:** volver a la terminal y presionar `Ctrl + C`.
+- **Cerrar el entorno virtual:** ejecutar `deactivate`.
+- **Volver a usarlo otro día:** abrir terminal en el proyecto → activar `.venv` → ejecutar `python -m streamlit run app.py`. No es necesario recrear el entorno ni reinstalar dependencias en cada inicio.
+- **Actualizar el repositorio:** con los cambios locales respaldados, ejecutar `git pull` y, si cambió `requirements.txt`, volver a ejecutar `python -m pip install -r requirements.txt`.
+
+### Comandos rápidos para un segundo inicio
+
+```powershell
+cd C:\proyectos\meMAREAVI
+.\.venv\Scripts\Activate.ps1
+python -m streamlit run app.py
+```
+
+Adaptar la ruta a la carpeta real del proyecto.
+
+---
+
+## 6. Flujo operativo: cómo elaborar el boletín
+
+**Secuencia recomendada:** preparar PIMET → obtener archivos de la casilla de pronóstico → cargar fuentes → revisar datos → crear/actualizar avisos → incorporar situaciones sinópticas → revisar METAREA y NAVTEX → descargar y **guardar** la emisión.
+
+### Paso 1. Completar el pronóstico en PIMET
+
+1. Ingresar a **PIMET** con el acceso habitual del COP.
+2. Completar y revisar los pronósticos de las áreas correspondientes al producto marítimo.
+3. **Enviar el producto desde PIMET**, de acuerdo con el procedimiento operativo vigente.
+4. Obtener del **buzón de pronóstico** el **XML meteorológico** resultante y guardarlo localmente.
+
+> No se describe una secuencia exacta de botones internos de PIMET porque no forma parte de esta aplicación y debe confirmarse con su procedimiento vigente. Lo indispensable para meMAREAVI es disponer del XML exportado con los pronósticos completos.
+
+### Paso 2. Descargar olas y hielos desde el correo
+
+En el **correo de pronóstico**, localizar los mensajes del **Servicio de Hidrografía Naval (SHN)** y descargar:
+
+- **TXT de olas:** el archivo correspondiente al producto/período a elaborar.
+- **TXT de hielos y témpanos:** utilizar el informe **más reciente disponible**, según el procedimiento operativo.
+
+Guardar ambos archivos en una carpeta identificable por fecha/hora de emisión, por ejemplo `Documentos\PronosticoMaritimo\2026-10-09_12UTC\`. No modificar manualmente la estructura de los TXT sin verificar que el parser los interprete correctamente.
+
+### Paso 3. Cargar las fuentes en meMAREAVI
+
+En la parte superior de la aplicación, en **Fuentes**, usar los tres campos de carga (se puede **arrastrar y soltar** cada archivo sobre su recuadro, o presionar **Upload**):
+
+| Campo | Archivo | Necesidad |
+|---|---|---|
+| **Subir XML meteorológico** | XML exportado desde PIMET | **Obligatorio** para generar los pronósticos |
+| **Subir TXT de olas** | TXT recibido del SHN | Opcional técnicamente; cargarlo cuando esté disponible |
+| **Subir TXT de hielos y témpanos** | TXT recibido del SHN | Cargar el más reciente disponible |
+
+La carga de un archivo **no equivale a guardar una emisión** en el histórico. Antes de continuar, comprobar que la aplicación haya interpretado correctamente los archivos.
+
+### Paso 4. Revisar las tres pestañas de fuentes
+
+- **Meteorología:** controlar áreas, viento, tiempo significativo y visibilidad importados desde PIMET.
+- **Olas:** revisar la información de olas interpretada desde el TXT del SHN y su correspondencia con las áreas.
+- **Hielos:** comprobar los bloques disponibles del informe de hielos y témpanos, en inglés y español.
+
+Si falta el TXT de olas, la aplicación puede seguir generando el boletín e indicará que no hay datos de olas disponibles. **La ausencia de datos no debe confundirse con un pronóstico válido de calma**. Revisar el resultado antes de emitir.
+
+### Paso 5. Crear, editar o cesar avisos de temporal
+
+Abrir la pestaña **⚠️ Avisos**:
+
+1. Revisar la lista de **avisos vigentes**.
+2. Si corresponde un aviso nuevo, completar el formulario **Nuevo aviso**: sistema, posición inicial (área, punto o polígono), movimiento, evolución, fuerza Beaufort, dirección del viento, período de validez, áreas afectadas y demás campos disponibles.
+3. Seleccionar las **áreas afectadas** del XML: son importantes para determinar en qué productos NAVTEX costeros debe aparecer el aviso.
+4. Guardar el aviso y verificar el texto generado.
+5. Para un aviso ya existente, utilizar **Editar** y actualizar los datos; si corresponde finalizarlo, utilizar **Cesar**.
+6. Verificar la **numeración de avisos** en la sección *Configuración de numeración* cuando sea necesario, especialmente al iniciar una operación o migrar el sistema.
+
+**Persistencia:** los avisos se mantienen en `data/avisos.json`. No dependen solamente de la sesión del navegador. Antes de cambiar o reinstalar la aplicación, respaldar ese archivo.
+
+### Paso 6. Incorporar situaciones sinópticas
+
+Abrir la pestaña **🌀 Situación**:
+
+1. Elegir la hora de referencia **00:00 o 12:00 UTC**.
+2. Seleccionar el sistema o fenómeno; completar presión central si corresponde.
+3. Indicar posición inicial, movimiento y evolución.
+4. Opcionalmente, indicar posición final prevista y su fecha/hora.
+5. Seleccionar las **áreas afectadas por la situación** cuando deba incorporarse a determinados NAVTEX costeros.
+6. Presionar **Agregar a la situación** y revisar el texto. Si se agregó una situación incorrecta, utilizar **Eliminar** y volver a crearla.
+
+**Atención:** las situaciones de esta versión se administran en la **sesión activa de Streamlit**. Para conservarlas como parte de una emisión histórica, guardar la emisión completa antes de cerrar la sesión. No asumir que se recuperarán automáticamente al reiniciar la aplicación.
+
+### Paso 7. Revisar los productos finales
+
+En **📄 Boletín final**:
+
+- Alternar la vista previa **Inglés / Español**.
+- Revisar fecha/hora UTC, avisos, sinopsis, hielos, pronósticos por área, olas y terminología.
+- Descargar por separado el boletín **METAREA VI en inglés** y **en español**.
+
+En **📡 NAVTEX**:
+
+- Revisar los **seis productos por estación costera**.
+- Revisar **TODAS LAS ESTACIONES COSTERAS**, el séptimo producto consolidado; **no incluye las áreas oceánicas**.
+- Descargar los TXT individuales o el ZIP con los siete productos.
+- Confirmar que los avisos y situaciones incluidos correspondan a las áreas de cada estación.
+
+> La asociación estación/área y las abreviaturas NAVTEX deben validarse con los procedimientos operativos antes de utilizarse en una emisión oficial.
+
+### Paso 8. Guardar la emisión completa
+
+En **🗃️ Archivo y datos**, presionar **💾 Guardar emisión completa**.
+
+La aplicación guarda una **instantánea** de los productos generados y de los insumos cargados: boletines en ambos idiomas, siete NAVTEX, pronósticos por área (`areas.json`), metadatos, avisos y situaciones, y copias de los archivos fuente disponibles.
+
+- **El guardado es manual.** Descargar un TXT o ZIP **no** guarda automáticamente la emisión.
+- **Cada pulsación genera una carpeta nueva**; no sobrescribe el histórico anterior. Evitar pulsaciones repetidas innecesarias.
+- El archivo histórico se conserva en el **disco del equipo o servidor donde corre Streamlit**, no en el equipo del usuario que accede desde otro navegador.
+- En la misma pestaña se pueden consultar emisiones anteriores, descargar una emisión completa y explorar datos por área en JSON.
+
+**ENVIAR (futuro):** se prevé un botón para confirmar la emisión, archivarla automáticamente y luego distribuirla por correo y FTP/SFTP, registrando éxito/error y permitiendo reintentos. **Ese botón y esos envíos no existen todavía en la versión documentada.** Por ahora, la transmisión operativa —si corresponde— debe seguir el circuito autorizado vigente del COP.
+
+---
+
+## 7. Qué contiene el archivo histórico
+
+Estructura ilustrativa (los nombres de archivos fuente pueden variar según lo cargado):
+
+```text
+data/
+├── avisos.json
+└── emisiones/
+    └── <identificador-de-emision>/
+        ├── metarea_ingles.txt
+        ├── metarea_espanol.txt
+        ├── navtex_*.txt
+        ├── areas.json
+        ├── metadatos.json
+        └── fuente_*.xml / fuente_*.txt  (si fueron cargados)
+```
+
+La carpeta `data/emisiones/` está excluida del control de versiones mediante `.gitignore`: **clonar o actualizar el repositorio no recupera automáticamente las emisiones históricas**. Definir un respaldo separado de `data/` y una política de permisos para el despliegue final.
+
+`areas.json` permite consultar pronósticos estructurados desde la interfaz, pero **no constituye todavía una API o endpoint HTTP**.
+
+## 8. Volumen de datos y dimensionamiento inicial
+
+Estimación a octubre de 2026, basada en una medición aproximada de **390–400 KB por carpeta de emisión**, con dos emisiones diarias (00 y 12 UTC) y un guardado por emisión. Unidades decimales.
+
+| Período | Cantidad | Volumen estimado |
 |---|---:|---:|
-| Una emisión | 1 | 390–400 KB |
-| Un día | 2 | 780–800 KB |
-| 30 días | 60 | 23,4–24 MB |
-| Un año (365 días) | 730 | 284,7–292 MB |
+| Emisión | 1 | 390–400 KB |
+| Día | 2 | 780–800 KB |
+| Mes de 30 días | 60 | 23,4–24 MB |
+| Año de 365 días | 730 | 284,7–292 MB |
 | Cinco años | 3.650 | 1,42–1,46 GB |
 | Diez años | 7.300 | 2,85–2,92 GB |
 
-**Conclusión preliminar:** el archivo histórico tiene una demanda de almacenamiento reducida. Como reserva de planificación se pueden prever **10 GB de espacio disponible para las emisiones**, con capacidad de ampliación, **además** del espacio para aplicación, sistema, logs y copias de seguridad. No es una exigencia técnica mínima ni reemplaza la medición en el entorno definitivo.
+**Sugerencia de planificación:** prever inicialmente **10 GB para el histórico**, ampliables, más espacio separado para el sistema, dependencias, registros y respaldos. No es un mínimo técnico obligatorio. Las reemisiones, correcciones, nuevas fuentes y copias de seguridad incrementarán el consumo.
 
-### Aspectos a considerar en producción
+Para producción se recomienda: volumen persistente (no efímero), respaldo periódico y restauración probada, control de permisos, supervisión de espacio disponible, retención documentada y evaluación de concurrencia/multiusuario.
 
-- **Persistencia real:** montar `data/` en un volumen duradero del servidor; evitar almacenamiento efímero de contenedores o despliegues que se reinicialicen.
-- **Respaldo y recuperación:** incluir `data/emisiones/` y `data/avisos.json` en copias de seguridad programadas; probar periódicamente la restauración. El almacenamiento requerido por las copias se calcula por separado.
-- **Versiones:** cada pulsación de «Guardar emisión completa» genera una carpeta nueva, incluso para una misma hora sinóptica. Registrar y diferenciar borradores, correcciones y emisiones enviadas cuando se implemente **ENVIAR**.
-- **Crecimiento:** controlar periódicamente el tamaño real de cada carpeta, el número de emisiones y el espacio libre; recalcular la proyección si cambian los XML/TXT o se agregan adjuntos.
-- **Concurrencia y retención:** antes de un despliegue multiusuario definir permisos, escritura segura, política de retención, auditoría y eventual migración a base de datos/almacenamiento de objetos.
-- **Distribución futura:** el correo y FTP/SFTP pueden requerir registros, colas y reintentos adicionales; su volumen no está incluido en estas cifras.
+## 9. Problemas frecuentes
 
-## Consulta de datos / API futura
+| Problema | Qué comprobar |
+|---|---|
+| `python` / `py` no se reconoce | Instalación de Python 3.11, PATH y reapertura de la terminal |
+| No se activa `.venv` | Revisar ruta; en PowerShell usar `Activate.ps1`; aplicar política **Process** solo si está permitido |
+| `No module named streamlit` | Activar el entorno correcto e instalar `requirements.txt` |
+| No abre la página | Comprobar que Streamlit sigue ejecutándose; usar la URL que imprime la terminal |
+| Puerto 8501 ocupado | Streamlit puede ofrecer otro puerto; usar la URL mostrada |
+| No aparecen áreas o pronósticos | Confirmar que se cargó un XML de PIMET válido y completo |
+| Faltan olas/hielos | Verificar que se cargaron los TXT correctos y revisar las pestañas correspondientes |
+| No aparece una situación en NAVTEX | Verificar que se hayan seleccionado las áreas costeras afectadas |
+| No encuentro una emisión guardada | Revisar la pestaña Archivo y datos y la carpeta `data/emisiones/` del servidor que ejecuta Streamlit |
+| Cambié de carpeta y perdí el histórico | El historial no viaja con Git; recuperar `data/` desde su copia de seguridad |
 
-En la misma solapa se pueden explorar emisiones anteriores, consultar los pronósticos de cada área y descargar `areas.json`. Esto **no es un endpoint HTTP**. Para exponer un endpoint de verdad se recomienda implementar una API de solo lectura (p.ej. FastAPI) con autenticación, paginación, control de acceso y respaldo del archivo histórico.
+## 10. Enlaces operativos
 
-## Pendientes operativos
+También accesibles desde la barra lateral del aplicativo:
 
-- Validación de terminología y formato con pronosticadores.
-- Validación de correspondencia oficial estación/área NAVTEX.
-- Persistencia multiusuario/transaccional y política de retención.
-- API HTTP con autorización y auditoría.
-- Registro formal de aprobación/publicación separado del guardado de borradores.
+- **OMM — METAREA VI:** <https://wwmiws.wmo.int/index.php/metareas/display/6>
+- **SMN — Zonas costeras:** <https://www.smn.gob.ar/zonas_costeras>
+- **Iridium — GMDSS:** <https://gmdss.iridium.com/#/>
+- **Inmarsat — MSDS:** <https://msds.inmarsat.com/msds/>
 
-## Nombre y enlaces
-La aplicación se presenta como **meMAREAVI** (Marítima Elaboraciones: Módulo Argentino de Reportes, Emisiones y Avisos). Los enlaces operativos se encuentran en la barra lateral. El séptimo NAVTEX consolida únicamente las estaciones costeras, no todas las áreas oceánicas.
+## 11. Pendientes antes del despliegue operativo definitivo
 
-## Identidad visual
+- Validación meteorológica de textos, traducciones, abreviaturas y cobertura NAVTEX.
+- Definir URL del repositorio institucional y proceso de despliegue/versionado.
+- Definir servidor, volumen persistente, respaldos, permisos y recuperación ante fallas.
+- Resolver persistencia de situaciones y comportamiento con varios usuarios concurrentes.
+- Implementar **ENVIAR**: aprobación, archivo automático, distribución por correo/FTP/SFTP, auditoría y reintentos.
+- Definir si se necesita API HTTP de consulta y qué controles de acceso debe tener.
 
-**meMAREAVI**: **me** = Marítima Elaboraciones; **MAREA** = Módulo Argentino de Reportes, Emisiones y Avisos; **VI** = METAREA VI. Colores institucionales propuestos: azul marino `#103D58`, celeste `#6BD4E4` y blanco.
+---
 
-El título, el encabezado, la barra lateral y el título de la pestaña del navegador reflejan la nueva identidad. El nombre es una propuesta de marca para el desarrollo, no una denominación oficial aprobada por el SMN.
-
-El guardado histórico sigue siendo **manual** hasta implementar un flujo ENVIAR con archivado previo y registro de distribución.
-
-## Ajustes visuales v10
-
-Encabezado con mayor margen superior, isotipo SVG de sol y olas, nombre `meMAREAVI` sin espacios e íconos en los cuatro enlaces operativos de la barra lateral.
+**Versión documentada:** meMAREAVI v10 (identidad visual). Este README describe las funciones presentes en esa versión y distingue explícitamente las capacidades previstas para el futuro.
