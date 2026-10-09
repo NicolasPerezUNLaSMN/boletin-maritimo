@@ -56,15 +56,17 @@ DIRECCIONES = {
 }
 
 ABREV = {
-    "BECOMING": "BECMG",
     "VEERING": "VEER",
     "BACKING": "BACK",
     "INCREASING": "INCR",
     "DECREASING": "DECR",
+    "BECOMING": "BECMG",
     "GUST": "G",
-     "THEN": "THEN"
+    "THEN": "THEN"
 }
 
+def abrev(clave):
+    return ABREV.get(clave, clave)
 
 ORDEN_AREAS = [
 
@@ -91,18 +93,15 @@ ORDEN_AREAS = [
 
 
 def texto_fenomeno(ww):
-
     if ww is None:
         return ""
 
     ww = int(ww)
 
-    # Ignorar fenómenos que solo representan nubosidad
     if ww in WW_NUBOSIDAD:
         return ""
 
     return WW.get(ww, "")
-
 
 def texto_visibilidad(vis):
     if vis is None:
@@ -113,11 +112,14 @@ def texto_visibilidad(vis):
     if vis >= 10000:
         return "VIS GOOD"
     elif vis >= 5000:
+        return "VIS FAIR"
+    elif vis >= 2000:
         return "VIS MOD"
     elif vis >= 1000:
         return "VIS POOR"
     else:
         return "VIS VERY POOR"
+
 
 
 def texto_viento_estado(p):
@@ -129,10 +131,9 @@ def texto_viento_estado(p):
     texto = f"{direccion} {viento}"
 
     if rafaga > viento:
-       texto += f" {ABREV['GUST']}{rafaga}"
+        texto += f" {abrev('GUST')}{rafaga}"
 
     return texto
-
 
 def es_veering(dir1, dir2):
     a = DIRECCIONES[dir1]
@@ -153,7 +154,6 @@ def evolucion_viento(pronos):
         actual = pronos[h]
         texto_actual = texto_viento_estado(actual)
 
-        # No repetir si no cambió nada
         if texto_actual == texto_previo:
             continue
 
@@ -164,14 +164,14 @@ def evolucion_viento(pronos):
 
             if actual["direccion"] != previo["direccion"]:
                 if es_veering(previo["direccion"], actual["direccion"]):
-                    cambios.append(ABREV["VEERING"])
+                    cambios.append(abrev("VEERING"))
                 else:
-                    cambios.append(ABREV["BACKING"])
+                    cambios.append(abrev("BACKING"))
 
             if actual["viento_kt"] > previo["viento_kt"]:
-                cambios.append(ABREV["INCREASING"])
+                cambios.append(abrev("INCREASING"))
             elif actual["viento_kt"] < previo["viento_kt"]:
-                cambios.append(ABREV["DECREASING"])
+                cambios.append(abrev("DECREASING"))
 
             cambios.append(texto_actual)
             partes.append(" ".join(cambios))
@@ -179,16 +179,17 @@ def evolucion_viento(pronos):
         previo = actual
         texto_previo = texto_actual
 
-    return f" {ABREV['THEN']} ".join(partes) + "."
+    if not partes:
+        return ""
+
+    return f" {abrev('THEN')} ".join(partes) + "."
 
 
 def evolucion_tiempo(pronos):
-
     partes = []
     previo = None
 
     for h in HORAS:
-
         if h not in pronos:
             continue
 
@@ -206,7 +207,7 @@ def evolucion_tiempo(pronos):
     if not partes:
         return "NOSIG WX."
 
-    return f" {ABREV['BECOMING']} ".join(partes) + "."
+    return f" {abrev('BECOMING')} ".join(partes) + "."
 
 
 def evolucion_visibilidad(pronos):
@@ -228,85 +229,15 @@ def evolucion_visibilidad(pronos):
         partes.append(actual)
         previo = actual
 
-    return f" {ABREV['BECOMING']} ".join(partes) + "."
-
-
-def evolucion_viento(pronos):
-
-    partes = []
-
-    previo = None
-
-    for h in HORAS:
-
-        if h not in pronos:
-            continue
-
-        actual = pronos[h]
-
-        direccion = actual["direccion"]
-        viento = actual["viento_kt"]
-        rafaga = actual.get("rafagas_kt", 0)
-
-        texto = f"{direccion} {viento}KT"
-
-        if rafaga > viento:
-            texto += f" GUST {rafaga}KT"
-
-        if previo is None:
-            partes.append(texto)
-
-        else:
-
-            cambios = []
-
-            # Dirección
-            if direccion != previo["direccion"]:
-
-                if es_veering(previo["direccion"], direccion):
-                    cambios.append("VEERING")
-
-                else:
-                    cambios.append("BACKING")
-
-            # Intensidad
-            if viento > previo["viento_kt"]:
-                cambios.append("INCREASING")
-
-            elif viento < previo["viento_kt"]:
-                cambios.append("DECREASING")
-
-            cambios.append(texto)
-
-            partes.append(" ".join(cambios))
-
-        previo = actual
-
-    return " THEN ".join(partes) + "."
-
-
-
-
-
-def texto_visibilidad(vis):
-
-    if vis is None:
+    if not partes:
         return ""
 
-    if vis >= 10000:
-        return "VIS GOOD"
+    return f" {abrev('BECOMING')} ".join(partes) + "."
 
-    elif vis >= 5000:
-        return "VIS FAIR"
 
-    elif vis >= 2000:
-        return "VIS MOD"
 
-    elif vis >= 1000:
-        return "VIS POOR"
 
-    else:
-        return "VIS VERY POOR"
+
     
 
 def texto_viento(dir, viento, rafaga=None):
@@ -319,29 +250,9 @@ def texto_viento(dir, viento, rafaga=None):
     return texto
 
 
-def texto_fenomeno(ww):
 
-    return WW.get(ww, "")
 
-def texto_visibilidad(vis):
 
-    if vis is None:
-        return ""
-
-    if vis >= 10000:
-        return "VIS GOOD"
-
-    elif vis >= 5000:
-        return "VIS FAIR"
-
-    elif vis >= 2000:
-        return "VIS MOD"
-
-    elif vis >= 1000:
-        return "VIS POOR"
-
-    else:
-        return "VIS VERY POOR"
     
 
 def generar_linea(datos):
@@ -560,7 +471,28 @@ def leer_xml(archivo: str | BinaryIO) -> dict:
 
 def generar_pronostico(datos):
 
+    boletin = generar_boletin_meteorologico(datos)
+
     salida = []
+
+    for area, info in boletin.items():
+
+        partes = [
+            info["viento"],
+            info["tiempo"],
+            info["visibilidad"],
+        ]
+
+        salida.append(
+            f"{area}: " + " ".join(p for p in partes if p)
+        )
+
+    return "\n\n".join(salida)
+
+
+def generar_boletin_meteorologico(datos):
+
+    resultado = {}
     areas = []
     usadas = set()
 
@@ -581,10 +513,11 @@ def generar_pronostico(datos):
         "AREA CENTRO OESTE",
         "AREA SUDESTE",
         "AREA SUDOESTE",
-        "AREA DRAKE"
+        "AREA DRAKE",
     ]:
         grupo = [
-            area for area in datos
+            area
+            for area in datos
             if area.upper().startswith(prefijo)
             and area not in usadas
         ]
@@ -594,21 +527,40 @@ def generar_pronostico(datos):
         for area in grupo:
             agregar_area(area)
 
-    # 3) Por si quedó alguna área afuera
+    # 3) Áreas que hayan quedado afuera
     for area in datos:
         agregar_area(area)
 
-    # Generar texto
+    # 4) Generar estructura por área
     for area in areas:
-
         pronos = datos[area]
 
-        viento = evolucion_viento(pronos)
-        tiempo = evolucion_tiempo(pronos)
-        visibilidad = evolucion_visibilidad(pronos)
+        resultado[area.upper()] = {
+            "viento": evolucion_viento(pronos),
+            "tiempo": evolucion_tiempo(pronos),
+            "visibilidad": evolucion_visibilidad(pronos),
+        }
 
-        partes = [p for p in [viento, tiempo, visibilidad] if p]
+    return resultado
 
-        salida.append(f"{area.upper()}: " + " ".join(partes))
+
+def generar_pronostico(datos):
+
+    boletin = generar_boletin_meteorologico(datos)
+    salida = []
+
+    for area, info in boletin.items():
+
+        partes = [
+            info["viento"],
+            info["tiempo"],
+            info["visibilidad"],
+        ]
+
+        salida.append(
+            f"{area}: " + " ".join(
+                parte for parte in partes if parte
+            )
+        )
 
     return "\n\n".join(salida)

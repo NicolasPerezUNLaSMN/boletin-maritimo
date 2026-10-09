@@ -1,0 +1,292 @@
+{
+  "id": "20261009T114859_eb2049f4",
+  "guardado_local": "2026-10-09T11:48:59.101125-03:00",
+  "hora_sinopsis_utc": "12:00",
+  "fuentes": {
+    "xml": "20260708-144543.xml",
+    "olas": "BOL_METAREA_VI_ING (1).txt",
+    "hielos": "NAVAREAVI_20260922_SMN.txt"
+  },
+  "avisos": [
+    {
+      "sistema": "STRONG BARIC GRADIENT",
+      "presion": null,
+      "tipo_posicion": "AREA",
+      "posicion_inicial": "",
+      "movimiento": "",
+      "evolucion": "",
+      "fuerza": 8,
+      "direccion_viento": "W",
+      "con_rafagas": true,
+      "areas_afectadas": [
+        "OFFSHORE RIO DE LA PLATA",
+        "RIO DE LA PLATA EXTERIOR"
+      ],
+      "inicio_es_actual": true,
+      "inicio_iso": "2026-10-09T00:00:00-03:00",
+      "fin_ddhh": "10/0000",
+      "texto_extra": "",
+      "id": 0,
+      "anio": 2026,
+      "estado": "VIGENTE"
+    }
+  ],
+  "situaciones": [
+    {
+      "sistema": "LOW",
+      "presion": 990,
+      "posicion_inicial": "RIO DE LA PLATA EXTERIOR",
+      "movimiento": "NE",
+      "evolucion": "WEAKENING",
+      "posicion_final": "",
+      "fin_ddhh": "",
+      "texto_extra": "",
+      "areas_afectadas": [
+        "OFFSHORE MAR DEL PLATA"
+      ]
+    }
+  ],
+  "areas": {
+    "RIO DE LA PLATA INTERIOR": {
+      "viento": "NW 4 G6 THEN VEER DECR N 3 THEN DECR N 2 THEN BACK NW 2.",
+      "tiempo": "NOSIG WX.",
+      "visibilidad": "VIS GOOD.",
+      "olas": "AT E 2.0/ 3.0M DECAYING , MOVING SW.",
+      "area_olas": "AREA RIO DE LA PLATA"
+    },
+    "RIO DE LA PLATA EXTERIOR": {
+      "viento": "NW 4 G7 THEN DECR NW 3 THEN VEER NNW 3 THEN BACK NW 3.",
+      "tiempo": "NOSIG WX.",
+      "visibilidad": "VIS GOOD.",
+      "olas": "AT E 2.0/ 3.0M DECAYING , MOVING SW.",
+      "area_olas": "AREA RIO DE LA PLATA"
+    },
+    "RIO DE LA PLATA INTERMEDIO": {
+      "viento": "NW 4 G6 THEN DECR NW 3 THEN VEER DECR N 2 THEN BACK INCR NNW 3 THEN BACK NW 3.",
+      "tiempo": "NOSIG WX.",
+      "visibilidad": "VIS GOOD.",
+      "olas": "AT E 2.0/ 3.0M DECAYING , MOVING SW.",
+      "area_olas": "AREA RIO DE LA PLATA"
+    },
+    "OFFSHORE RIO DE LA PLATA": {
+      "viento": "WNW 5 G8 THEN BACK W 5 G7 THEN VEER DECR NW 3 THEN BACK W 3 THEN VEER WNW 3.",
+      "tiempo": "NOSIG WX.",
+      "visibilidad": "VIS GOOD.",
+      "olas": "AT E 2.0/ 3.0M DECAYING , MOVING SW.",
+      "area_olas": "AREA RIO DE LA PLATA"
+    },
+    "OFFSHORE MAR DEL PLATA": {
+      "viento": "W 5 G6 THEN W 5 G7 THEN DECR W 4 THEN DECR W 3 THEN INCR W 4.",
+      "tiempo": "NOSIG WX.",
+      "visibilidad": "VIS GOOD.",
+      "olas": "AT E 2.0/ 3.0M DECAYING , MOVING SW.",
+      "area_olas": "AREA A"
+    },
+    "OFFSHORE BAHIA BLANCA": {
+      "viento": "W 3 THEN VEER WNW 3 THEN BACK SW 3 THEN BACK DECR SSW 2 THEN BACK INCR S 4.",
+      "tiempo": "BR.",
+      "visibilidad": "VIS GOOD.",
+      "olas": "AT NE 2.0/ 3.0M DECAYING , MOVING SW.",
+      "area_olas": "AREA B"
+    },
+    "OFFSHORE VALDES": {
+      "viento": "SW 2 THEN BACK INCR S 3 THEN BACK INCR SSE 4.",
+      "tiempo": "FG.",
+      "visibilidad": "VIS GOOD.",
+      "olas": "AT E 2.0/ 3.5M DECAYING , MOVING NE.",
+      "area_olas": "AREA C"
+    },
+    "OFFSHORE SAN JORGE": {
+      "viento": "SSE 4 THEN VEER DECR SSW 3 THEN BACK S 3 THEN VEER DECR SSW 2 THEN VEER WSW 2.",
+      "tiempo": "NOSIG WX.",
+      "visibilidad": "VIS GOOD.",
+      "olas": "AT E 2.0/ 3.5M DECAYING , MOVING NW.",
+      "area_olas": "AREA D"
+    },
+    "OFFSHORE PATAGONIA SUR": {
+      "viento": "SW 4 THEN VEER WSW 4 THEN VEER WNW 4 THEN INCR WNW 5 G6.",
+      "tiempo": "NOSIG WX.",
+      "visibilidad": "VIS GOOD.",
+      "olas": "WITHOUT SIGNIFICANT WAVE HEIGHT.",
+      "area_olas": "AREA E"
+    },
+    "OFFSHORE FIN DEL MUNDO": {
+      "viento": "SW 4 G6 THEN VEER INCR NW 5 G6 THEN BACK INCR WNW 7 G8 THEN DECR WNW 6 G7 THEN BACK DECR SW 4.",
+      "tiempo": "SHRA.",
+      "visibilidad": "VIS GOOD.",
+      "olas": "WITHOUT SIGNIFICANT WAVE HEIGHT.",
+      "area_olas": "AREA F"
+    },
+    "ZONA MALVINAS": {
+      "viento": "SW 4 THEN BACK SSW 4 THEN VEER DECR W 3 THEN VEER INCR WNW 5 G7 THEN BACK INCR W 6 G7.",
+      "tiempo": "SHRA.",
+      "visibilidad": "VIS GOOD.",
+      "olas": "WITHOUT SIGNIFICANT WAVE HEIGHT.",
+      "area_olas": "AREA G"
+    },
+    "AREA NORTE (N 40S E30W)": {
+      "viento": "SE 5 G6 THEN BACK ESE 5 G6 THEN ESE 5 THEN VEER DECR SE 4 THEN VEER DECR S 3.",
+      "tiempo": "RA BECMG SHRA BECMG ISOL TS.",
+      "visibilidad": "VIS GOOD.",
+      "olas": "2.0/ 5.0M  TEMPORARY 5.5M, MOVING SE.",
+      "area_olas": "AREA NORTE"
+    },
+    "AREA NORTE (N 40S E40 W30)": {
+      "viento": "ENE 7 G8 THEN DECR ENE 6 G7 THEN VEER DECR E 4 THEN BACK DECR ENE 3.",
+      "tiempo": "RA BECMG SHRA BECMG ISOL TS.",
+      "visibilidad": "VIS GOOD.",
+      "olas": "2.0/ 5.0M  TEMPORARY 5.5M, MOVING SE.",
+      "area_olas": "AREA NORTE"
+    },
+    "AREA NORTE (N 40S W 40W)": {
+      "viento": "W 5 THEN DECR W 4 THEN DECR W 3 THEN BACK INCR WSW 4 THEN VEER W 4.",
+      "tiempo": "ISOL TS.",
+      "visibilidad": "VIS GOOD.",
+      "olas": "2.0/ 5.0M  TEMPORARY 5.5M, MOVING SE.",
+      "area_olas": "AREA NORTE"
+    },
+    "AREA CENTRO ESTE (N 45S E 030W)": {
+      "viento": "E 5 THEN VEER ESE 5 G6 THEN VEER SE 5 G6 THEN VEER SSE 5 G6.",
+      "tiempo": "ISOL TS BECMG SHRA BECMG ISOL TS.",
+      "visibilidad": "VIS GOOD.",
+      "olas": "2.0/ 5.0M  TEMPORARY 5.5M, MOVING SE.",
+      "area_olas": "AREA CENTRO ESTE"
+    },
+    "AREA CENTRO ESTE (N 45S W 030W)": {
+      "viento": "NE 5 G7 THEN DECR NE 4 G6 THEN NE 4.",
+      "tiempo": "RA BECMG SHRA BECMG ISOL TS.",
+      "visibilidad": "VIS GOOD.",
+      "olas": "2.0/ 5.0M  TEMPORARY 5.5M, MOVING SE.",
+      "area_olas": "AREA CENTRO ESTE"
+    },
+    "AREA CENTRO ESTE (S 45S E 030W)": {
+      "viento": "NNW 2 THEN VEER NNE 2 THEN VEER INCR ESE 3 THEN BACK INCR E 4 THEN VEER ESE 4.",
+      "tiempo": "ISOL TS BECMG SHRA.",
+      "visibilidad": "VIS GOOD.",
+      "olas": "2.0/ 5.0M  TEMPORARY 5.5M, MOVING SE.",
+      "area_olas": "AREA CENTRO ESTE"
+    },
+    "AREA CENTRO ESTE (S 45S W 030W)": {
+      "viento": "NNE 5 G7 THEN NNE 5 G8 THEN BACK INCR N 6 G8 THEN DECR N 5 G7.",
+      "tiempo": "RA BECMG SHRA.",
+      "visibilidad": "VIS GOOD.",
+      "olas": "2.0/ 5.0M  TEMPORARY 5.5M, MOVING SE.",
+      "area_olas": "AREA CENTRO ESTE"
+    },
+    "AREA CENTRO OESTE (N 45S W 40W)": {
+      "viento": "NE 4 G6 THEN BACK INCR NNW 5 G6 THEN DECR NNW 3 THEN BACK NW 3 THEN BACK SW 3.",
+      "tiempo": "ISOL TS.",
+      "visibilidad": "VIS GOOD.",
+      "olas": "2.0/ 5.0M DECAYING , MOVING SE.",
+      "area_olas": "AREA CENTRO OESTE"
+    },
+    "AREA CENTRO OESTE (N 45S W 50W)": {
+      "viento": "WSW 2 THEN BACK INCR SW 3 THEN BACK INCR SSW 4 THEN INCR SSW 5 THEN BACK S 5 G6.",
+      "tiempo": "NOSIG WX.",
+      "visibilidad": "VIS GOOD.",
+      "olas": "2.0/ 5.0M DECAYING , MOVING SE.",
+      "area_olas": "AREA CENTRO OESTE"
+    },
+    "AREA CENTRO OESTE (S 45S W 040W)": {
+      "viento": "NNE 5 G8 THEN BACK N 5 G8 THEN BACK DECR NNW 4 THEN BACK SW 4 THEN BACK INCR SSW 5.",
+      "tiempo": "NOSIG WX.",
+      "visibilidad": "VIS GOOD.",
+      "olas": "2.0/ 5.0M DECAYING , MOVING SE.",
+      "area_olas": "AREA CENTRO OESTE"
+    },
+    "AREA CENTRO OESTE (S 45S W 050W)": {
+      "viento": "SW 3 THEN BACK INCR S 5 THEN DECR S 4 THEN VEER SSW 4.",
+      "tiempo": "NOSIG WX.",
+      "visibilidad": "VIS GOOD.",
+      "olas": "2.0/ 5.0M DECAYING , MOVING SE.",
+      "area_olas": "AREA CENTRO OESTE"
+    },
+    "AREA SUDESTE (N 55S W 030W)": {
+      "viento": "N 5 G8 THEN BACK INCR NNW 6 G9 THEN VEER N 6 G9 THEN BACK INCR NNW 7 G9.",
+      "tiempo": "ISOL TS BECMG SHRA.",
+      "visibilidad": "VIS GOOD.",
+      "olas": "2.0/ 3.5M DECAYING , MOVING E.",
+      "area_olas": "AREA SUR ESTE"
+    },
+    "AREA SUDESTE (S 55S E 030W)": {
+      "viento": "NW 5 G9 THEN INCR NW 6 G10 THEN NW 6 G9.",
+      "tiempo": "ISOL TS BECMG SHRA.",
+      "visibilidad": "VIS GOOD.",
+      "olas": "2.0/ 3.5M DECAYING , MOVING E.",
+      "area_olas": "AREA SUR ESTE"
+    },
+    "AREA SUDESTE (S 55S W 030W)": {
+      "viento": "NNW 7 G11 THEN NNW 7 G10 THEN BACK DECR NW 6 G8 THEN DECR NW 3.",
+      "tiempo": "ISOL TS BECMG SHRA BECMG DZ.",
+      "visibilidad": "VIS GOOD BECMG VIS MOD BECMG VIS VERY POOR.",
+      "olas": "2.0/ 3.5M DECAYING , MOVING E.",
+      "area_olas": "AREA SUR ESTE"
+    },
+    "AREA SUDESTE( N 55S E 030W)": {
+      "viento": "NW 4 THEN VEER NNW 4 THEN NNW 4 G6.",
+      "tiempo": "ISOL TS BECMG SHRA.",
+      "visibilidad": "VIS GOOD.",
+      "olas": "2.0/ 3.5M DECAYING , MOVING E.",
+      "area_olas": "AREA SUR ESTE"
+    },
+    "AREA SUDOESTE (N 55S E 050W)": {
+      "viento": "N 6 G9 THEN DECR N 5 G8 THEN DECR N 3 THEN VEER INCR SSE 6 G7 THEN VEER DECR S 5 G7.",
+      "tiempo": "RA BECMG SHRA BECMG DZ.",
+      "visibilidad": "VIS VERY POOR BECMG VIS GOOD.",
+      "olas": "2.0/ 3.5M DECAYING , MOVING NE.",
+      "area_olas": "AREA SUR OESTE"
+    },
+    "AREA SUDOESTE (N 55S W 050W)": {
+      "viento": "SW 4 THEN BACK SSW 4 G6 THEN DECR SSW 3 THEN VEER INCR W 4 G6 THEN INCR W 5 G7.",
+      "tiempo": "SHRA.",
+      "visibilidad": "VIS GOOD.",
+      "olas": "2.0/ 3.5M DECAYING , MOVING NE.",
+      "area_olas": "AREA SUR OESTE"
+    },
+    "AREA SUDOESTE (S 55S E 050W)": {
+      "viento": "NW 3 THEN BACK W 3 THEN VEER WNW 3 THEN VEER INCR NW 4 G6 THEN BACK INCR WNW 6 G8.",
+      "tiempo": "ISOL TS BECMG SHRA BECMG DZ.",
+      "visibilidad": "VIS FAIR BECMG VIS GOOD.",
+      "olas": "2.0/ 3.5M DECAYING , MOVING NE.",
+      "area_olas": "AREA SUR OESTE"
+    },
+    "AREA SUDOESTE (S 55S W 050W)": {
+      "viento": "W 5 G7 THEN VEER WNW 5 G8 THEN VEER INCR NW 7 G9 THEN INCR NW 8 G10 THEN BACK DECR W 6 G8.",
+      "tiempo": "ISOL TS BECMG SHRA BECMG DZ.",
+      "visibilidad": "VIS GOOD.",
+      "olas": "2.0/ 3.5M DECAYING , MOVING NE.",
+      "area_olas": "AREA SUR OESTE"
+    },
+    "AREA DRAKE": {
+      "viento": "W 8 G9 THEN VEER NW 8 G10 THEN BACK WNW 8 G10 THEN BACK DECR W 7 G9 THEN W 7 G8.",
+      "tiempo": "ISOL TS BECMG SHRA BECMG DZ.",
+      "visibilidad": "VIS GOOD.",
+      "olas": "2.0/ 3.5M LITTLE CHANGE, MOVING NE.",
+      "area_olas": "AREA DRAKE"
+    }
+  },
+  "navtex_estaciones": [
+    "BUENOS AIRES",
+    "BAHIA BLANCA",
+    "MAR DEL PLATA",
+    "COMODORO RIVADAVIA",
+    "RIO GALLEGOS",
+    "USHUAIA",
+    "TODAS LAS ESTACIONES COSTERAS"
+  ],
+  "sha256": {
+    "metarea_ingles.txt": "51a08bba0724ecbca0c56c781730ddad7b37503941a2f5f47564d38388388192",
+    "metarea_espanol.txt": "521c87f47d94e7ccf8c24c293d341797730be8a4531d18c32afeb19cf040b0cc",
+    "navtex_buenos_aires.txt": "1cff570fbc73fa659d7951f40546e4ecc13216e14711d1f00448f890be53d257",
+    "navtex_bahia_blanca.txt": "eced5106c87ae568067dc8218c4a70c0c05c70b01ae99983e30e923895e82931",
+    "navtex_mar_del_plata.txt": "ac95d153c37ff69dbd9dd423bdb2a38c4a88176e8c2e14fa28108a45993317cc",
+    "navtex_comodoro_rivadavia.txt": "34c48b9fef59a306d18258aabd7b1db24abcafdb1c1d8bc959294dda7ac3b9e3",
+    "navtex_rio_gallegos.txt": "d0e0d64af88693cffccb2284ccea6a5c493f07478408c4734823acbdb61daaf7",
+    "navtex_ushuaia.txt": "dc0e51e71ef65e2c5f5320cd90324ebdcdc77917e01fe53e4fda40f7015c7936",
+    "navtex_todas_las_estaciones_costeras.txt": "f21ee1393784514c940532c10dec91706a5954f8453f6e9be3c517bd495f707b",
+    "fuente_xml.xml": "384cb760102cb25cc50c79f8501c0f5fb62c137f2a8f7189e6d59987347dac73",
+    "fuente_olas.txt": "5578f47c7078931b2d31f3c227bad0485595c1b5c3bf7aa1cd9e609eba22ee36",
+    "fuente_hielos.txt": "e746278f27a063853d5ae9ad3b6c254ace78c48f0c0f868bc0c1787d535058ba"
+  },
+  "estado": "BORRADOR_GUARDADO"
+}
