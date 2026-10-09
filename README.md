@@ -11,7 +11,7 @@ Aplicación web local desarrollada en **Python + Streamlit** para integrar el pr
 
 ## 1. Requisitos previos
 
-- **Windows 10/11** (las instrucciones principales se dan para PowerShell); también puede ejecutarse en Linux/macOS con comandos equivalentes.
+- **Windows 10/11** para pruebas locales o **Linux** para pruebas y despliegue en servidor (se documentan ambos procedimientos).
 - **Python 3.11**, recomendado para reproducir el entorno de desarrollo actual.
 - **Git**, para clonar el repositorio. Si recibiste el proyecto como ZIP, Git no es indispensable.
 - Acceso a la red para instalar dependencias la primera vez.
@@ -149,7 +149,123 @@ Adaptar la ruta a la carpeta real del proyecto.
 
 ---
 
-## 6. Flujo operativo: cómo elaborar el boletín
+
+## 6. Instalación y ejecución en Linux (Ubuntu/Debian)
+
+Esta sección es **alternativa a los pasos 1–5 de Windows**. Sirve para una PC Linux o un servidor de pruebas. Se supone una distribución Ubuntu/Debian con `apt`, un usuario con permisos `sudo` para instalar paquetes y un repositorio institucional cuya URL deberá proporcionar DPS. Para Rocky/AlmaLinux/RHEL cambian los comandos de instalación de paquetes.
+
+### 6.1. Instalar Python, entorno virtual y Git
+
+Abrir una terminal y verificar primero las versiones disponibles:
+
+```bash
+python3 --version
+git --version
+```
+
+Si faltan Python o Git, instalar los paquetes:
+
+```bash
+sudo apt update
+sudo apt install -y python3 python3-venv python3-pip git
+```
+
+**Compatibilidad:** la versión de referencia del desarrollo es **Python 3.11**. El comando anterior instala la versión que provee la distribución, que puede ser distinta. Si no es 3.11, comprobar la compatibilidad de `requirements.txt` antes de pasar a producción. No reemplazar el Python del sistema ni forzar repositorios de terceros sin autorización de Infraestructura. Si el servidor dispone de `python3.11`, usarlo en los comandos siguientes.
+
+### 6.2. Clonar el repositorio
+
+```bash
+mkdir -p ~/aplicaciones
+cd ~/aplicaciones
+git clone <URL-DEL-REPOSITORIO>
+cd <CARPETA-DEL-REPOSITORIO>
+ls app.py requirements.txt
+```
+
+Reemplazar los valores entre `<>` por los reales; la URL institucional todavía no está documentada. Si se recibe un ZIP, extraerlo y abrir su carpeta raíz, donde se encuentran `app.py` y `requirements.txt`.
+
+### 6.3. Crear y activar el entorno virtual
+
+```bash
+python3 -m venv .venv
+source .venv/bin/activate
+python --version
+```
+
+Para usar específicamente Python 3.11, cuando esté instalado:
+
+```bash
+python3.11 -m venv .venv
+source .venv/bin/activate
+```
+
+En Linux **no se utiliza `Activate.ps1` ni `Set-ExecutionPolicy`**. Si el shell informa `Permission denied`, no es necesario hacer ejecutable el script: se activa con `source`. Si `venv` falla por falta de `ensurepip`, instalar el paquete `python3-venv` correspondiente a la versión del intérprete.
+
+### 6.4. Instalar dependencias
+
+```bash
+python -m pip install --upgrade pip
+python -m pip install -r requirements.txt
+```
+
+Si la instalación falla por restricciones de red, proxy o certificados institucionales, resolverlo con Infraestructura; no desactivar la validación TLS como solución permanente.
+
+### 6.5. Ejecutar localmente en Linux
+
+```bash
+python -m streamlit run app.py
+```
+
+Abrir **http://localhost:8501** en el navegador de la misma máquina. Para detener, presionar `Ctrl+C`. Para salir del entorno: `deactivate`.
+
+En sesiones posteriores:
+
+```bash
+cd ~/aplicaciones/<CARPETA-DEL-REPOSITORIO>
+source .venv/bin/activate
+python -m streamlit run app.py
+```
+
+**Sin activar el entorno:** también se puede ejecutar `./.venv/bin/python -m streamlit run app.py`.
+
+### 6.6. Prueba desde otra PC de la red interna
+
+Para una **prueba controlada**, con autorización de Infraestructura y reglas de firewall adecuadas, se puede escuchar en la interfaz de red del servidor:
+
+```bash
+python -m streamlit run app.py --server.address 0.0.0.0 --server.port 8501
+```
+
+Desde otra PC de la misma red, ingresar a `http://IP-INTERNA-DEL-SERVIDOR:8501`. `0.0.0.0` significa *escuchar en todas las interfaces*, **no** es una URL de acceso. **No publicar el puerto 8501 directamente en Internet**: Streamlit no aporta por sí solo el esquema institucional de autenticación, HTTPS y control de acceso requerido para producción.
+
+### 6.7. Persistencia y permisos en Linux
+
+La versión actual guarda las emisiones en `data/emisiones/` y los avisos en `data/avisos.json`, relativos a la carpeta del proyecto. Por eso:
+
+- Ejecutar la aplicación con un **usuario de servicio sin privilegios de administrador**, con permisos de escritura en `data/`.
+- No ejecutar Streamlit con `sudo` o como `root`.
+- Mantener `data/` en un almacenamiento **persistente** y con copias de seguridad. **No** incluir datos operativos ni credenciales en el repositorio Git.
+- En esta versión, `data/emisiones/` está excluida de Git, pero se debe revisar el resto de `data/` antes de cada `git add` o publicación del repositorio.
+- Si se actualiza o reemplaza la carpeta del proyecto, **respaldar `data/` antes** y restaurarla en la ubicación que leerá la nueva instancia. La aplicación todavía no permite configurar su ruta mediante una variable de entorno.
+
+Ejemplo para verificar el almacenamiento después de guardar una emisión:
+
+```bash
+find data/emisiones -maxdepth 2 -type f | head -30
+du -sh data/
+```
+
+### 6.8. Servidor institucional: recomendaciones antes de producción
+
+Para un despliegue estable se recomienda ejecutar meMAREAVI como **servicio administrado** (por ejemplo, `systemd`) detrás de un **proxy inverso HTTPS** (Nginx/Apache) con autenticación y acceso limitado a la red institucional o VPN. El servicio debería reiniciarse automáticamente ante fallas y registrar logs consultables por Infraestructura.
+
+**No se entrega todavía una unidad `systemd` ni una configuración de Nginx lista para producción**, porque deben definirse el usuario de servicio, directorios finales, dominio interno, certificados, política de autenticación, proxy y respaldos del SMN. La versión actual tampoco está dockerizada: Docker se considera una siguiente etapa, no un requisito para probarla en Linux.
+
+**Punto operativo importante:** antes de habilitar varios usuarios simultáneos, revisar la numeración y modificación concurrente de avisos, la persistencia de situaciones y la política de guardado. Un servidor Linux no resuelve automáticamente esos problemas.
+
+---
+
+## 7. Flujo operativo: cómo elaborar el boletín
 
 **Secuencia recomendada:** preparar PIMET → obtener archivos de la casilla de pronóstico → cargar fuentes → revisar datos → crear/actualizar avisos → incorporar situaciones sinópticas → revisar METAREA y NAVTEX → descargar y **guardar** la emisión.
 
@@ -249,7 +365,7 @@ La aplicación guarda una **instantánea** de los productos generados y de los i
 
 ---
 
-## 7. Qué contiene el archivo histórico
+## 8. Qué contiene el archivo histórico
 
 Estructura ilustrativa (los nombres de archivos fuente pueden variar según lo cargado):
 
@@ -270,7 +386,7 @@ La carpeta `data/emisiones/` está excluida del control de versiones mediante `.
 
 `areas.json` permite consultar pronósticos estructurados desde la interfaz, pero **no constituye todavía una API o endpoint HTTP**.
 
-## 8. Volumen de datos y dimensionamiento inicial
+## 9. Volumen de datos y dimensionamiento inicial
 
 Estimación a octubre de 2026, basada en una medición aproximada de **390–400 KB por carpeta de emisión**, con dos emisiones diarias (00 y 12 UTC) y un guardado por emisión. Unidades decimales.
 
@@ -287,7 +403,7 @@ Estimación a octubre de 2026, basada en una medición aproximada de **390–400
 
 Para producción se recomienda: volumen persistente (no efímero), respaldo periódico y restauración probada, control de permisos, supervisión de espacio disponible, retención documentada y evaluación de concurrencia/multiusuario.
 
-## 9. Problemas frecuentes
+## 10. Problemas frecuentes
 
 | Problema | Qué comprobar |
 |---|---|
@@ -302,7 +418,7 @@ Para producción se recomienda: volumen persistente (no efímero), respaldo peri
 | No encuentro una emisión guardada | Revisar la pestaña Archivo y datos y la carpeta `data/emisiones/` del servidor que ejecuta Streamlit |
 | Cambié de carpeta y perdí el histórico | El historial no viaja con Git; recuperar `data/` desde su copia de seguridad |
 
-## 10. Enlaces operativos
+## 11. Enlaces operativos
 
 También accesibles desde la barra lateral del aplicativo:
 
@@ -311,7 +427,7 @@ También accesibles desde la barra lateral del aplicativo:
 - **Iridium — GMDSS:** <https://gmdss.iridium.com/#/>
 - **Inmarsat — MSDS:** <https://msds.inmarsat.com/msds/>
 
-## 11. Pendientes antes del despliegue operativo definitivo
+## 12. Pendientes antes del despliegue operativo definitivo
 
 - Validación meteorológica de textos, traducciones, abreviaturas y cobertura NAVTEX.
 - Definir URL del repositorio institucional y proceso de despliegue/versionado.
@@ -322,4 +438,4 @@ También accesibles desde la barra lateral del aplicativo:
 
 ---
 
-**Versión documentada:** meMAREAVI v10 (identidad visual). Este README describe las funciones presentes en esa versión y distingue explícitamente las capacidades previstas para el futuro.
+**Versión documentada:** meMAREAVI v10 (identidad visual), con procedimientos de instalación en Windows y Linux. Este README describe las funciones presentes en esa versión y distingue explícitamente las capacidades previstas para el futuro.
