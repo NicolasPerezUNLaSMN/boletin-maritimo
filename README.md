@@ -439,3 +439,9 @@ También accesibles desde la barra lateral del aplicativo:
 ---
 
 **Versión documentada:** meMAREAVI v10 (identidad visual), con procedimientos de instalación en Windows y Linux. Este README describe las funciones presentes en esa versión y distingue explícitamente las capacidades previstas para el futuro.
+
+---
+
+## Ejecución alternativa con Docker (v11)
+
+Para instalar en Windows con Docker Desktop o preparar un despliegue en Linux con Docker Engine y Compose, consultar **[GUIA-DOCKER.md](GUIA-DOCKER.md)**. La carpeta `data/` se monta en el host y debe respaldarse. El servicio se publica por defecto solo en `http://localhost:8501`.

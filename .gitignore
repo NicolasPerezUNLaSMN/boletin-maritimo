@@ -1,19 +1,10 @@
-# Entorno virtual
 .venv/
-
-# Python
 __pycache__/
 *.pyc
-
-# VS Code
-.vscode/
-
-# Streamlit
-.streamlit/
-
-# Archivos temporales
-*.log
-*.tmp
-
-# Datos que no quieras versionar
-datos/historial/
+.streamlit/secrets.toml
+data/emisiones/
+.venv/
+__pycache__/
+.env
+.streamlit/secrets.toml
+data/emisiones/

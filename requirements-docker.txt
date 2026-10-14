@@ -1,0 +1,3 @@
+# Dependencias directas de meMAREAVI; Streamlit instala sus dependencias transitivas.
+# Mantener la version probada en Windows antes de promover a produccion.
+streamlit==1.59.1
